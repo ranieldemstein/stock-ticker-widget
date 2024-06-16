@@ -34,7 +34,7 @@ async function getSnapshotData(ticker) {
 // Fetch financials data from the API
 async function getFinancialsData(ticker) {
     try {
-        const response = await fetch(`https://api.polygon.io/vX/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
+        const response = await fetch(`https://api.polygon.io/v2/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
         if (!response.ok) throw new Error(`Financials data fetch error: ${response.statusText}`);
         const data = await response.json();
         console.log('Financials data:', data);  // Log the data to see its structure
