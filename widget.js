@@ -34,7 +34,7 @@ async function getSnapshotData(ticker) {
 // Fetch financials data from the API
 async function getFinancialsData(ticker) {
     try {
-        const response = await fetch(`https://api.polygon.io/v3/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
+        const response = await fetch(`https://api.polygon.io/vX/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
         if (!response.ok) throw new Error(`Financials data fetch error: ${response.statusText}`);
         const data = await response.json();
         console.log('Financials data:', data);  // Log the data to see its structure
@@ -165,10 +165,8 @@ async function updateWidget() {
         document.getElementById('div-yield').innerText = formatDividendYield(dps, frequency, currentPrice);
 
         // Display the EPS value
-        const epsValue = financialsData?.financials?.income_statement?.basic_earnings_per_share?.value;
-        if (epsValue === undefined) {
-            console.error('EPS data not found in financialsData:', financialsData);
-        }
+        const epsValue = financialsData.financials.income_statement.basic_earnings_per_share.value;
+        console.log('EPS Value:', epsValue);  // Log the EPS value to check if it's being fetched correctly
         document.getElementById('eps').innerText = epsValue ? epsValue.toFixed(2) : 'N/A';
 
         // Display the P/E ratio
