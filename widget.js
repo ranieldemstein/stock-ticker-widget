@@ -165,7 +165,7 @@ async function updateWidget() {
         document.getElementById('div-yield').innerText = formatDividendYield(dps, frequency, currentPrice);
 
         // Display the EPS value
-        const epsValue = financialsData.financials.income_statement.basic_earnings_per_share;
+        const epsValue = financialsData.financials.income_statement.basic_earnings_per_share.value;
         console.log('EPS Value:', epsValue);  // Log the EPS value to check if it's being fetched correctly
         document.getElementById('eps').innerText = epsValue ? epsValue.toFixed(2) : 'N/A';
 
