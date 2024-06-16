@@ -165,10 +165,8 @@ async function updateWidget() {
         document.getElementById('div-yield').innerText = formatDividendYield(dps, frequency, currentPrice);
 
         // Display the EPS value
-        let epsValue = null;
-        if (financialsData && financialsData.financials && financialsData.financials.income_statement && financialsData.financials.income_statement.basic_earnings_per_share) {
-            epsValue = financialsData.financials.income_statement.basic_earnings_per_share.value;
-        } else {
+        const epsValue = financialsData?.financials?.income_statement?.basic_earnings_per_share?.value;
+        if (epsValue === undefined) {
             console.error('EPS data not found in financialsData:', financialsData);
         }
         document.getElementById('eps').innerText = epsValue ? epsValue.toFixed(2) : 'N/A';
