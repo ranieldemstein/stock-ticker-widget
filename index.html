@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Widget</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .widget {
+            background-color: #2b2b2b;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        .company-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+            background-color: #000;
+        }
+        .company-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #888;
+        }
+        .ticker {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .current-price {
+            font-size: 32px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .usd {
+            font-size: 14px;
+            color: #888;
+            margin-left: 5px;
+        }
+        .price-change {
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        .market-status {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            margin-top: 2px;
+            margin-bottom: 10px;
+        }
+        .bottom-row {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+        .bottom-row::-webkit-scrollbar { 
+            display: none;  /* Safari and Chrome */
+        }
+        .bottom-item {
+            margin-right: 20px;
+            text-align: center;
+        }
+        .value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .label {
+            font-size: 11px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget">
+        <div class="company-info">
+            <div class="logo">
+                <img id="company-logo" alt="Company Logo" width="50" height="50">
+            </div>
+            <div>
+                <div class="ticker" id="ticker">Loading...</div>
+                <div class="company-name" id="company-name">Loading...</div>
+            </div>
+        </div>
+        <div class="current-price">
+            <span id="current-price">Loading...</span><span class="usd" id="usd">USD</span>
+            <span class="price-change" id="price-change">Loading...</span>
+        </div>
+        <div class="market-status" id="market-status">Loading...</div>
+        <div class="bottom-row">
+            <div class="bottom-item">
+                <div class="value" id="market-cap">Loading...</div>
+                <div class="label">Market Cap</div>
+            </div>
+            <div class="bottom-item">
+                <div class="value" id="eps">Loading...</div>
+                <div class="label">EPS</div>
+            </div>
+            <div class="bottom-item">
+                <div class="value" id="div-yield">Loading...</div>
+                <div class="label">Div Yield</div>
+            </div>
+            <div class="bottom-item">
+                <div class="value" id="pe">Loading...</div>
+                <div class="label">P/E</div>
+            </div>
+        </div>
+    </div>
+    <script src="widget.js"></script>
+</body>
+</html>
