@@ -34,11 +34,11 @@ async function getSnapshotData(ticker) {
 // Fetch financials data from the API
 async function getFinancialsData(ticker) {
     try {
-        const response = await fetch(`https://api.polygon.io/v3/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
+        const response = await fetch(`https://api.polygon.io/vX/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
         if (!response.ok) throw new Error(`Financials data fetch error: ${response.statusText}`);
         const data = await response.json();
         console.log('Financials data:', data);  // Log the data to see its structure
-        return data.results;
+        return data.results[0];
     } catch (error) {
         console.error('Error fetching financials data:', error);
         throw error;
@@ -117,16 +117,6 @@ function formatPERatio(price, eps) {
     return 'N/A';
 }
 
-// Fetch EPS from financial data with cascade checking
-function getEPS(financials) {
-    for (const result of financials) {
-        if (result.financials && result.financials.income_statement && result.financials.income_statement.basic_earnings_per_share) {
-            return result.financials.income_statement.basic_earnings_per_share.value;
-        }
-    }
-    return 'N/A';
-}
-
 // Update the widget with fetched data
 async function updateWidget() {
     try {
@@ -174,13 +164,13 @@ async function updateWidget() {
         const frequency = dividendData.length ? dividendData[0].frequency : null;
         document.getElementById('div-yield').innerText = formatDividendYield(dps, frequency, currentPrice);
 
-        // Fetch and display the EPS value with cascade checking
-        const epsValue = getEPS(financialsData);
+        // Display the EPS value
+        const epsValue = financialsData.financials.income_statement.basic_earnings_per_share.value;
         console.log('EPS Value:', epsValue);  // Log the EPS value to check if it's being fetched correctly
-        document.getElementById('eps').innerText = epsValue;
+        document.getElementById('eps').innerText = epsValue ? epsValue.toFixed(2) : 'N/A';
 
         // Display the P/E ratio
-        const peRatio = formatPERatio(currentPrice, epsValue === 'N/A' ? null : epsValue);
+        const peRatio = formatPERatio(currentPrice, epsValue);
         document.getElementById('pe').innerText = peRatio;
 
         // Display the market status
