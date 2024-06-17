@@ -120,7 +120,7 @@ function formatPERatio(price, eps) {
 // Fetch EPS from TTM data
 function getEPS(financials) {
     if (financials.length > 0 && financials[0].financials && financials[0].financials.income_statement && financials[0].financials.income_statement.basic_earnings_per_share) {
-        return financials[0].financials.income_statement.basic_earnings_per_share.value;
+        return financials[0].financials.income_statement.basic_earnings_per_share.value.toFixed(2);
     }
     return 'N/A';
 }
