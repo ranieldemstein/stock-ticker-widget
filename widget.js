@@ -34,7 +34,7 @@ async function getSnapshotData(ticker) {
 // Fetch financials data from the API
 async function getFinancialsData(ticker) {
     try {
-        const response = await fetch(`https://api.polygon.io/vX/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
+        const response = await fetch(`https://api.polygon.io/v3/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
         if (!response.ok) throw new Error(`Financials data fetch error: ${response.statusText}`);
         const data = await response.json();
         console.log('Financials data:', data);  // Log the data to see its structure
@@ -111,35 +111,18 @@ function formatDividendYield(dps, frequency, price) {
 
 // Calculate and format P/E ratio
 function formatPERatio(price, eps) {
-    if (price && eps) {
+    if (price && eps && eps !== 'N/A') {
         return (price / eps).toFixed(2);
     }
     return 'N/A';
 }
 
-// Fetch EPS from financial data with cascade checking
+// Fetch EPS from TTM data
 function getEPS(financials) {
-    for (const result of financials) {
-        if (result.financials && result.financials.income_statement && result.financials.income_statement.basic_earnings_per_share) {
-            return result.financials.income_statement.basic_earnings_per_share.value;
-        }
+    if (financials.length > 0 && financials[0].timeframe === 'TTM' && financials[0].financials && financials[0].financials.income_statement && financials[0].financials.income_statement.basic_earnings_per_share) {
+        return financials[0].financials.income_statement.basic_earnings_per_share.value;
     }
     return 'N/A';
-}
-
-// Manually calculate EPS if not available
-function calculateEPS(financials) {
-    let totalEarnings = 0;
-    let count = 0;
-
-    for (const result of financials) {
-        if (result.financials && result.financials.income_statement && result.financials.income_statement.basic_earnings_per_share) {
-            totalEarnings += result.financials.income_statement.basic_earnings_per_share.value;
-            count++;
-        }
-    }
-
-    return count > 0 ? (totalEarnings / count) : 'N/A';
 }
 
 // Update the widget with fetched data
@@ -189,16 +172,13 @@ async function updateWidget() {
         const frequency = dividendData.length ? dividendData[0].frequency : null;
         document.getElementById('div-yield').innerText = formatDividendYield(dps, frequency, currentPrice);
 
-        // Fetch and display the EPS value with cascade checking
-        let epsValue = getEPS(financialsData);
-        if (epsValue === 'N/A') {
-            epsValue = calculateEPS(financialsData);
-        }
+        // Fetch and display the EPS value from TTM
+        const epsValue = getEPS(financialsData);
         console.log('EPS Value:', epsValue);  // Log the EPS value to check if it's being fetched correctly
         document.getElementById('eps').innerText = epsValue;
 
         // Display the P/E ratio
-        const peRatio = formatPERatio(currentPrice, epsValue === 'N/A' ? null : epsValue);
+        const peRatio = formatPERatio(currentPrice, epsValue);
         document.getElementById('pe').innerText = peRatio;
 
         // Display the market status
