@@ -117,26 +117,40 @@ function formatPERatio(price, eps) {
     return 'N/A';
 }
 
-// Manually calculate EPS if not available in the TTM financial period
-function calculateEPS(financialsData) {
+// Fetch EPS from financial data with cascade checking
+function getEPS(financials) {
+    for (const result of financials) {
+        if (result.financials && result.financials.income_statement && result.financials.income_statement.basic_earnings_per_share) {
+            return result.financials.income_statement.basic_earnings_per_share.value;
+        }
+    }
+    return 'N/A';
+}
+
+// Manually calculate EPS if not available
+function calculateEPS(financials) {
     let totalEarnings = 0;
     let count = 0;
 
-    for (const period of financialsData) {
-        if (period.financials && period.financials.income_statement && period.financials.income_statement.basic_earnings_per_share) {
-            totalEarnings += period.financials.income_statement.basic_earnings_per_share.value;
+    for (const result of financials) {
+        if (result.financials && result.financials.income_statement && result.financials.income_statement.basic_earnings_per_share) {
+            totalEarnings += result.financials.income_statement.basic_earnings_per_share.value;
             count++;
         }
     }
 
-    return count > 0 ? (totalEarnings / count) : null;
+    return count > 0 ? (totalEarnings / count) : 'N/A';
 }
 
 // Update the widget with fetched data
 async function updateWidget() {
     try {
-        const tickerElement = document.getElementById('ticker');
-        const ticker = tickerElement.innerText;
+        const ticker = getURLParameter('ticker');
+        if (!ticker) {
+            throw new Error('Ticker parameter is missing in the URL');
+        }
+
+        document.getElementById('ticker').innerText = ticker.toUpperCase();
 
         const companyData = await getCompanyData(ticker);
         document.getElementById('company-logo').src = `${companyData.branding.icon_url}?apiKey=${apiKey}`;
@@ -164,7 +178,7 @@ async function updateWidget() {
         if (priceChange >= 0) {
             priceChangeElement.style.color = '#06cbf8';
         } else {
-            priceChangeElement.style.color = '#ff1114';
+            priceChangeElement.style.color = '#ff4441';
         }
 
         // Display the Market Cap value
@@ -175,18 +189,16 @@ async function updateWidget() {
         const frequency = dividendData.length ? dividendData[0].frequency : null;
         document.getElementById('div-yield').innerText = formatDividendYield(dps, frequency, currentPrice);
 
-        // Display the EPS value
-        let epsValue = financialsData.find(period => period.financials && period.financials.income_statement && period.financials.income_statement.basic_earnings_per_share);
-        if (!epsValue) {
+        // Fetch and display the EPS value with cascade checking
+        let epsValue = getEPS(financialsData);
+        if (epsValue === 'N/A') {
             epsValue = calculateEPS(financialsData);
-        } else {
-            epsValue = epsValue.financials.income_statement.basic_earnings_per_share.value;
         }
         console.log('EPS Value:', epsValue);  // Log the EPS value to check if it's being fetched correctly
-        document.getElementById('eps').innerText = epsValue ? epsValue.toFixed(2) : 'N/A';
+        document.getElementById('eps').innerText = epsValue;
 
         // Display the P/E ratio
-        const peRatio = formatPERatio(currentPrice, epsValue);
+        const peRatio = formatPERatio(currentPrice, epsValue === 'N/A' ? null : epsValue);
         document.getElementById('pe').innerText = peRatio;
 
         // Display the market status
