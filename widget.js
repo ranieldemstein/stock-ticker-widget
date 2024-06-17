@@ -34,7 +34,7 @@ async function getSnapshotData(ticker) {
 // Fetch financials data from the API
 async function getFinancialsData(ticker) {
     try {
-        const response = await fetch(`https://api.polygon.io/v3/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
+        const response = await fetch(`https://api.polygon.io/vX/reference/financials?ticker=${ticker}&apiKey=${apiKey}`);
         if (!response.ok) throw new Error(`Financials data fetch error: ${response.statusText}`);
         const data = await response.json();
         console.log('Financials data:', data);  // Log the data to see its structure
@@ -119,7 +119,7 @@ function formatPERatio(price, eps) {
 
 // Fetch EPS from TTM data
 function getEPS(financials) {
-    if (financials.length > 0 && financials[0].timeframe === 'TTM' && financials[0].financials && financials[0].financials.income_statement && financials[0].financials.income_statement.basic_earnings_per_share) {
+    if (financials.length > 0 && financials[0].financials && financials[0].financials.income_statement && financials[0].financials.income_statement.basic_earnings_per_share) {
         return financials[0].financials.income_statement.basic_earnings_per_share.value;
     }
     return 'N/A';
